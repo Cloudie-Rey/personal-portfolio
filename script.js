@@ -348,18 +348,26 @@ const HB = new T.Vector3(-15, 11, 17);
 const HT = new T.Vector3(0, 1.4, 1);
 const homePos = () => HB.clone().multiplyScalar(Math.max(1, 1.5 / cam.aspect));
 
-const ren = new T.WebGLRenderer({ antialias: true, alpha: true });
-ren.setClearColor(0x000000, 0);
-ren.localClippingEnabled = true;
-ren.setPixelRatio(Math.min(devicePixelRatio, 2));
-stage.appendChild(ren.domElement);
+let ren, ctl;
+let webglSupported = true;
 
-const ctl = new T.OrbitControls(cam, ren.domElement);
-ctl.enableDamping = true;
-ctl.target.copy(HT);
-ctl.maxPolarAngle = 1.45;
-ctl.minDistance = 2;
-ctl.maxDistance = 36;
+try {
+  ren = new T.WebGLRenderer({ antialias: true, alpha: true });
+  ren.setClearColor(0x000000, 0);
+  ren.localClippingEnabled = true;
+  ren.setPixelRatio(Math.min(devicePixelRatio, 2));
+  stage.appendChild(ren.domElement);
+
+  ctl = new T.OrbitControls(cam, ren.domElement);
+  ctl.enableDamping = true;
+  ctl.target.copy(HT);
+  ctl.maxPolarAngle = 1.45;
+  ctl.minDistance = 2;
+  ctl.maxDistance = 36;
+} catch (error) {
+  console.warn("WebGL not supported on this device, skipping 3D background:", error);
+  webglSupported = false;
+}
 
 const gm = new T.DataTexture(new Uint8Array([120, 185, 255]), 3, 1, T.LuminanceFormat);
 gm.minFilter = gm.magFilter = T.NearestFilter;
@@ -4034,44 +4042,48 @@ function dismissHolidayMessage() {
 }
 
 $('#holiday-message-close').onclick = dismissHolidayMessage;
-ren.domElement.addEventListener('pointerdown', e => dragStartPos = [e.clientX, e.clientY]);
-ren.domElement.addEventListener('pointerup', e => {
-  if (dragStartPos && Math.hypot(e.clientX - dragStartPos[0], e.clientY - dragStartPos[1]) < 5) {
-    if (pickValentinesRose(e)) {
-      showHolidayMessage('jk i bought this for myself');
-      return;
+
+if (webglSupported && ren) {
+  ren.domElement.addEventListener('pointerdown', e => dragStartPos = [e.clientX, e.clientY]);
+  ren.domElement.addEventListener('pointerup', e => {
+    if (dragStartPos && Math.hypot(e.clientX - dragStartPos[0], e.clientY - dragStartPos[1]) < 5) {
+      if (pickValentinesRose(e)) {
+        showHolidayMessage('jk i bought this for myself');
+        return;
+      }
+      if (pickAlvinBirthdayRose(e)) {
+        showHolidayMessage('is this thing on? testing testing 123... wishing my bestfriend a a great year!');
+        return;
+      }
+      if (pickBirthdayCake(e)) {
+        sendBirthdayNotification();
+        return;
+      }
+      const clickedObj = pickObject(e);
+      if (clickedObj) focusObject(clickedObj);
     }
-    if (pickAlvinBirthdayRose(e)) {
-      showHolidayMessage('is this thing on? testing testing 123... wishing my bestfriend a a great year!');
-      return;
+  });
+  ren.domElement.addEventListener('pointermove', e => {
+    const rect = ren.domElement.getBoundingClientRect();
+    if (rect.width && rect.height) {
+      balloonPointerNdc.set(
+        ((e.clientX - rect.left) / rect.width) * 2 - 1,
+        -((e.clientY - rect.top) / rect.height) * 2 + 1
+      );
+      balloonPointerInCanvas = true;
     }
-    if (pickBirthdayCake(e)) {
-      sendBirthdayNotification();
-      return;
-    }
-    const clickedObj = pickObject(e);
-    if (clickedObj) focusObject(clickedObj);
-  }
-});
-ren.domElement.addEventListener('pointermove', e => {
-  const rect = ren.domElement.getBoundingClientRect();
-  if (rect.width && rect.height) {
-    balloonPointerNdc.set(
-      ((e.clientX - rect.left) / rect.width) * 2 - 1,
-      -((e.clientY - rect.top) / rect.height) * 2 + 1
-    );
-    balloonPointerInCanvas = true;
-  }
-  ren.domElement.style.cursor = pickValentinesRose(e) || pickAlvinBirthdayRose(e) || pickBirthdayCake(e) || pickObject(e)
-    ? 'pointer'
-    : 'grab';
-});
-ren.domElement.addEventListener('pointerleave', () => balloonPointerInCanvas = false);
+    ren.domElement.style.cursor = pickValentinesRose(e) || pickAlvinBirthdayRose(e) || pickBirthdayCake(e) || pickObject(e)
+      ? 'pointer'
+      : 'grab';
+  });
+  ren.domElement.addEventListener('pointerleave', () => balloonPointerInCanvas = false);
+}
 
 /* ==========================================================================
    12. Window Resize & Rendering Loop
    ========================================================================== */
 function handleResize() {
+  if (!webglSupported || !ren) return;
   ren.setSize(W(), H());
   cam.aspect = W() / H();
   cam.updateProjectionMatrix();
@@ -4087,7 +4099,7 @@ let lastHolidayAnimationTime = 0;
 
 function renderLoop() {
   requestAnimationFrame(renderLoop);
-  if (mode !== '3d') return;
+  if (mode !== '3d' || !webglSupported || !ren) return;
 
   const time = performance.now() / 1000;
   const delta = lastHolidayAnimationTime ? Math.min(time - lastHolidayAnimationTime, 0.05) : 0;
