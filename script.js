@@ -273,10 +273,19 @@ const TABS = [
 
 const panel = $('#panel');
 
-const ABOUT_ASCII_ART = await fetch('about-ascii.txt').then(response => {
-  if (!response.ok) throw new Error(`Failed to load About ASCII art: ${response.status}`);
-  return response.text();
-}).then(art => art.replace(/\r?\n$/, ''));
+async function loadAsciiArt(element) {
+  try {
+    const response = await fetch(new URL('./about-ascii.txt', import.meta.url));
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const art = (await response.text()).replace(/\r?\n$/, '');
+    if (!art) throw new Error('Artwork is empty');
+    renderAsciiArt(element, art);
+  } catch (error) {
+    console.error('Could not load About ASCII art:', error);
+    element.classList.add('about-ascii-unavailable');
+    element.textContent = 'Artwork unavailable.';
+  }
+}
 
 function renderAsciiArt(element, art) {
   const rows = art.split('\n');
@@ -412,7 +421,7 @@ function renderPortfolio() {
     </footer>`;
   
   panel.innerHTML = html;
-  renderAsciiArt(panel.querySelector('.about-ascii'), ABOUT_ASCII_ART);
+  loadAsciiArt(panel.querySelector('.about-ascii'));
 }
 
 function switchTab(id) {

@@ -839,6 +839,10 @@ td.k {
   user-select: none;
 }
 
+.about-ascii-unavailable {
+  font: 14px/1.5 'JetBrains Mono', monospace;
+}
+
 .ascii-sparkle {
   position: absolute;
   z-index: 1;
