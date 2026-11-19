@@ -57,7 +57,7 @@ const D = {
     intro: "Games I've contributed to or developed.",
     cards: [
       ['Internal Reflection', 'Two-player cooperative puzzle game focusing on communication mechanics.', 'UNITY · TSA 2025', '', 'https://play.unity.com/en/games/13111446-5ec6-4932-8b29-29df2e3f5448/internal-reflection'],
-      ['The Spellbound Assassins', 'A fantasy adventure created for TSA.', 'SCRATCH · TSA', '', 'https://scratch.mit.edu/projects/1216822994'],
+      ['The Spellbound Assassins', 'Scratch game created, inspired by my TSA team of friends, for a class project.', 'SCRATCH · TSA', '', 'https://scratch.mit.edu/projects/1216822994'],
       ["Alvin's Endless Adventure", 'A playable endless adventure built in Flowlab.', 'FLOWLAB', '', 'https://flowlab.io/game/play/2232462']
     ]
   },
