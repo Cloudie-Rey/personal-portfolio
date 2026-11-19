@@ -1282,7 +1282,7 @@ td.k {
   align-items: center;
   column-gap: 0;
   row-gap: 8px;
-  margin-bottom: 32px;
+  margin-bottom: 0;
 }
 
 #panel .overview-intro .hero {
@@ -1483,6 +1483,7 @@ header {
   padding: 68px 0 32px;
 }
 
+#panel .portfolio-content > .overview-intro + .about-me,
 #panel .portfolio-content > section + section,
 #panel .portfolio-content > section > .sec + .sec {
   padding-top: clamp(40px, 6vw, 80px);
