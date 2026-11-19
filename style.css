@@ -175,6 +175,10 @@ header {
     display: flex;
   }
 
+  header.menu-open {
+    z-index: 20;
+  }
+
   .menu-item {
     padding: 10px 16px;
     border-bottom: none;
