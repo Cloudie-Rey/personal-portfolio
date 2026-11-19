@@ -57,8 +57,8 @@ const D = {
     intro: "Games I've contributed to or developed.",
     cards: [
       ['Internal Reflection', 'Two-player cooperative puzzle game focusing on communication mechanics.', 'UNITY · TSA 2025'],
-      ['State 1st Place', 'Awarded 1st Place at the TSA State Conference for Video Game Design.', 'AWARD'],
-      ['National 3rd Place', 'Awarded 3rd Place at the TSA National Conference for Video Game Design.', 'NATIONAL']
+      ['The Spellbound Assassins', 'A fantasy adventure created for TSA.', 'SCRATCH · TSA'],
+      ["Alvin's Endless Adventure", 'A playable endless adventure built in Flowlab.', 'FLOWLAB']
     ],
     rows: [
       [responsiveRowLabel('The Spellbound Assassins (TSA)', 'Spellbound Assassins'), '<a href="https://scratch.mit.edu/projects/1216822994" target="_blank" rel="noopener">Play on Scratch</a>', 'SCRATCH'],
