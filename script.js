@@ -274,11 +274,16 @@ const side = $('#side');
 const panel = $('#panel');
 
 function switchTab(id) {
-  side.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.t === id));
   const activeTab = TABS.find(x => x[0] === id);
 
+  if (!panel) return;
   if (id === 'ov') {
     panel.innerHTML = `
+      <!-- Floating 3D Room Preview -->
+      <div class="floating-room-preview">
+        <canvas id="room-preview-canvas"></canvas>
+        <button id="room-expand" class="room-expand-btn" title="Click to explore in 3D">↗</button>
+      </div>
       <div class="sec hero">
         <div class="code">// MYSPACE.PY</div>
         <h1>Reyaa Divakar<br>Robotics & Mechanical Engineering.</h1>
@@ -299,15 +304,25 @@ function switchTab(id) {
     panel.innerHTML = activeTab[2].map(key => renderSection(key)).join('');
   }
   panel.scrollTop = 0;
+  
+  // Update top menu active state
+  const topMenuItems = document.querySelectorAll('#top-menu .menu-item');
+  topMenuItems.forEach(item => item.classList.toggle('on', item.dataset.tab === id));
+  
+  // Set up room preview after innerHTML update
+  if (id === 'ov') {
+    setTimeout(initRoomPreview, 50);
+    setTimeout(setupRoomExpandBtn, 50);
+  }
 }
 
-side.innerHTML = TABS.map(t => `<button data-t="${t[0]}">${t[1]}</button>`).join('');
-side.onclick = e => e.target.dataset.t && switchTab(e.target.dataset.t);
-panel.onclick = e => {
-  const row = e.target.closest('tr.go');
-  if (row) switchTab(row.dataset.t);
-};
-switchTab('ov');
+if (panel) {
+  panel.onclick = e => {
+    const row = e.target.closest('tr.go');
+    if (row) switchTab(row.dataset.t);
+  };
+  switchTab('ov');
+}
 
 /* ==========================================================================
    3. View Switcher Mode Handler
@@ -328,14 +343,61 @@ function setMenuOpen(open) {
   $('#menu-toggle').setAttribute('aria-expanded', String(open));
 }
 
+// Floating room preview renderer
+let roomPreviewRenderer, roomPreviewCanvas;
+
+function initRoomPreview() {
+  roomPreviewCanvas = $('#room-preview-canvas');
+  if (!roomPreviewCanvas || roomPreviewRenderer) return; // Already initialized or canvas not found
+  
+  try {
+    roomPreviewRenderer = new T.WebGLRenderer({ 
+      canvas: roomPreviewCanvas, 
+      antialias: true, 
+      alpha: true 
+    });
+    roomPreviewRenderer.setClearColor(0x000000, 0);
+    roomPreviewRenderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
+    roomPreviewRenderer.setSize(180, 180);
+  } catch (e) {
+    console.warn('Could not create room preview renderer:', e);
+  }
+}
+
+function renderRoomPreview() {
+  if (!roomPreviewRenderer || !scene || !cam) return;
+  roomPreviewRenderer.render(scene, cam);
+}
+
+// Set up room expand button
+function setupRoomExpandBtn() {
+  const expandBtn = $('#room-expand');
+  if (expandBtn) {
+    expandBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setMode('3d');
+    });
+  }
+}
+
 $('#b3').onclick = () => setMode('3d');
 $('#bg').onclick = () => setMode('grid');
 $('#menu-toggle').onclick = () => setMenuOpen(!$('header').classList.contains('menu-open'));
 
+// Set up top menu navigation
+const topMenuItems = document.querySelectorAll('#top-menu .menu-item');
+topMenuItems.forEach(item => {
+  item.addEventListener('click', (e) => {
+    const tab = item.dataset.tab;
+    if (tab) {
+      switchTab(tab);
+      setMenuOpen(false); // Close mobile menu after selection
+    }
+  });
+});
+
 /* ==========================================================================
    4. Three.js 3D Scene Architecture & Helper Functions
-   ========================================================================== */
-const stage = $('#stage');
 const W = () => stage.clientWidth;
 const H = () => stage.clientHeight;
 
@@ -4099,6 +4161,14 @@ let lastHolidayAnimationTime = 0;
 
 function renderLoop() {
   requestAnimationFrame(renderLoop);
+  
+  // Render room preview when in grid mode
+  if (mode === 'grid') {
+    renderRoomPreview();
+    setupRoomExpandBtn();
+    return;
+  }
+  
   if (mode !== '3d' || !webglSupported || !ren) return;
 
   const time = performance.now() / 1000;

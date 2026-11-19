@@ -19,20 +19,29 @@
   <!-- Top Navigation Bar -->
   <header>
     <div class="brand"><b>🌩️</b> Reyaa<span>Divakar</span></div>
+    <nav class="top-menu" id="top-menu">
+      <button class="menu-item on" data-tab="ov">Overview</button>
+      <button class="menu-item" data-tab="res">Resume</button>
+      <button class="menu-item" data-tab="eng">Tech Projects</button>
+      <button class="menu-item" data-tab="biz">Experience</button>
+      <button class="menu-item" data-tab="med">Creative</button>
+      <button class="menu-item" data-tab="fun">Fun Facts</button>
+      <button class="menu-item" data-tab="con">Contact</button>
+    </nav>
     <nav class="sw" id="view-switch">
       <button id="b3" class="on">Interactive View</button>
       <button id="bg">Classic View</button>
     </nav>
     <div class="st">● SYSTEMS ONLINE</div>
-    <button id="menu-toggle" type="button" aria-label="Switch view" aria-expanded="false" aria-controls="view-switch">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    <button id="menu-toggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="top-menu">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" fill="none"/></svg>
     </button>
   </header>
 
   <!-- Main Display View Canvas -->
   <main>
     <!-- 3D Interactive Canvas Scene -->
-    <section id="v3d" class="view on">
+    <section id="v3d" class="view">
       <div id="stage"></div>
       <div id="labels"></div>
       <div class="hint">Drag to orbit · scroll to zoom · click on a number and explore!</div>
@@ -68,10 +77,15 @@
     </section>
 
     <!-- Professional Modular Grid View -->
-    <section id="vgrid" class="view">
+    <section id="vgrid" class="view on">
       <div class="gw">
-        <nav id="side"></nav>
-        <div id="panel"></div>
+        <div id="panel">
+          <!-- Floating 3D Room Preview -->
+          <div class="floating-room-preview">
+            <canvas id="room-preview-canvas"></canvas>
+            <button id="room-expand" class="room-expand-btn" title="Click to explore in 3D">↗</button>
+          </div>
+        </div>
       </div>
     </section>
   </main>
