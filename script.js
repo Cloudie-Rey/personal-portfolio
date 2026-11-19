@@ -56,14 +56,9 @@ const D = {
     code: 'ARCADE.BIN',
     intro: "Games I've contributed to or developed.",
     cards: [
-      ['Internal Reflection', 'Two-player cooperative puzzle game focusing on communication mechanics.', 'UNITY · TSA 2025'],
-      ['The Spellbound Assassins', 'A fantasy adventure created for TSA.', 'SCRATCH · TSA'],
-      ["Alvin's Endless Adventure", 'A playable endless adventure built in Flowlab.', 'FLOWLAB']
-    ],
-    rows: [
-      [responsiveRowLabel('The Spellbound Assassins (TSA)', 'Spellbound Assassins'), '<a href="https://scratch.mit.edu/projects/1216822994" target="_blank" rel="noopener">Play on Scratch</a>', 'SCRATCH'],
-      [responsiveRowLabel("Alvin's Endless Adventure", "Alvin's Adventure"), '<a href="https://flowlab.io/game/play/2232462" target="_blank" rel="noopener">Play on Flowlab</a>', 'FLOWLAB'],
-      ['Internal Reflection', '<a href="https://play.unity.com/en/games/13111446-5ec6-4932-8b29-29df2e3f5448/internal-reflection" target="_blank" rel="noopener">Play on Unity</a>', 'UNITY']
+      ['Internal Reflection', 'Two-player cooperative puzzle game focusing on communication mechanics.', 'UNITY · TSA 2025', '', 'https://play.unity.com/en/games/13111446-5ec6-4932-8b29-29df2e3f5448/internal-reflection', 'play.unity.com/.../internal-reflection'],
+      ['The Spellbound Assassins', 'A fantasy adventure created for TSA.', 'SCRATCH · TSA', '', 'https://scratch.mit.edu/projects/1216822994', 'scratch.mit.edu/projects/1216822994'],
+      ["Alvin's Endless Adventure", 'A playable endless adventure built in Flowlab.', 'FLOWLAB', '', 'https://flowlab.io/game/play/2232462', 'flowlab.io/game/play/2232462']
     ]
   },
   youtube: {
@@ -127,7 +122,12 @@ const renderSection = (key, includeSpotifyEmbed = true) => {
       <h2>${s.title}</h2>
       <p>${s.intro}</p>
       ${musicCardAction}
-      ${s.cards ? `<div class="cards">${s.cards.map(c => `<div class="card">${c[3] ? `<div class="card-image"><img src="${c[3]}" alt="${c[0]}" loading="lazy"></div>` : ''}<i>${c[2]}</i><h3>${c[0]}</h3><p>${c[1]}</p></div>`).join('')}</div>` : ''}
+      ${s.cards ? `<div class="cards">${s.cards.map(c => {
+        const content = `${c[3] ? `<div class="card-image"><img src="${c[3]}" alt="${c[0]}" loading="lazy"></div>` : ''}<i>${c[2]}</i><h3>${c[0]}</h3><p>${c[1]}</p>${c[5] ? `<span class="card-url">${c[5]} ↗</span>` : ''}`;
+        return c[4]
+          ? `<a class="card card-link" href="${c[4]}" target="_blank" rel="noopener">${content}</a>`
+          : `<div class="card">${content}</div>`;
+      }).join('')}</div>` : ''}
       ${s.rows ? `<table>${s.rows.map(r => `<tr>${r.map((x, i) => `<td${i ? '' : ' class="k"'}>${x}</td>`).join('')}</tr>`).join('')}</table>` : ''}
       ${s.links ? s.links.map(link => `<a class="btn" href="${link[1]}" download>${link[0]}</a>`).join(' ') : ''}
       ${s.buttons ? `<div class="action-buttons">${s.buttons.map(([label, url, size]) => `<a class="btn${size === 'small' ? ' btn-small' : ''}" href="${url}" target="_blank" rel="noopener">${label}</a>`).join('')}</div>` : ''}
