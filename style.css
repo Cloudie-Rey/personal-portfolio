@@ -94,35 +94,7 @@ header {
 }
 
 .sw {
-  display: flex;
-  gap: 4px;
-  background: #0f1626;
-  border: 1px solid var(--ln);
-  padding: 3px;
-  border-radius: 8px;
-  flex-shrink: 0;
-}
-
-.sw button {
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 600;
-  font-size: 12px;
-  color: var(--mut);
-  background: none;
-  border: 0;
-  padding: 7px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.sw button::before { content: "[ "; }
-.sw button::after { content: " ]"; }
-
-.sw button.on {
-  color: #021016;
-  background: var(--cy);
-  box-shadow: 0 0 14px rgba(0, 243, 255, 0.5);
+  display: none !important;
 }
 
 .st {

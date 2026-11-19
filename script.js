@@ -274,46 +274,61 @@ const side = $('#side');
 const panel = $('#panel');
 
 function switchTab(id) {
-  const activeTab = TABS.find(x => x[0] === id);
-
   if (!panel) return;
-  if (id === 'ov') {
-    panel.innerHTML = `
-      <!-- Floating 3D Room Preview -->
-      <div class="floating-room-preview">
-        <canvas id="room-preview-canvas"></canvas>
-        <button id="room-expand" class="room-expand-btn" title="Click to explore in 3D">↗</button>
-      </div>
-      <div class="sec hero">
-        <div class="code">// MYSPACE.PY</div>
-        <h1>Reyaa Divakar<br>Robotics & Mechanical Engineering.</h1>
-        <p>Hi! Welcome to my humble abode! I'm learning and creating all the time! Take a look at my work by clicking where ever your cursiosity takes you!</p>
-      </div>
-      <div class="traits" aria-label="Personal strengths">
-        <span>Creative</span>
-        <span>Collaborative</span>
-        <span>Problem Solver</span>
-        <span>Flexible</span>
-      </div>
-      <div class="sec">
-        <table>
-          ${TABS.slice(1).map(x => `<tr class="go" data-t="${x[0]}"><td class="k">${x[1]}</td><td>${D[x[2][0]].intro}</td></tr>`).join('')}
-        </table>
-      </div>`;
-  } else {
-    panel.innerHTML = activeTab[2].map(key => renderSection(key)).join('');
+  
+  // Always show overview with all content scrollable below
+  let html = `
+    <!-- Floating 3D Room Preview -->
+    <div class="floating-room-preview">
+      <canvas id="room-preview-canvas"></canvas>
+      <button id="room-expand" class="room-expand-btn" title="Click to explore in 3D">↗</button>
+    </div>
+    <div class="sec hero">
+      <div class="code">// MYSPACE.PY</div>
+      <h1>Reyaa Divakar<br>Robotics & Mechanical Engineering.</h1>
+      <p>Hi! Welcome to my humble abode! I'm learning and creating all the time! Take a look at my work by clicking where ever your cursiosity takes you!</p>
+    </div>
+    <div class="traits" aria-label="Personal strengths">
+      <span>Creative</span>
+      <span>Collaborative</span>
+      <span>Problem Solver</span>
+      <span>Flexible</span>
+    </div>
+    <div class="sec">
+      <table>
+        ${TABS.slice(1).map(x => `<tr class="go" data-t="${x[0]}"><td class="k">${x[1]}</td><td>${D[x[2][0]].intro}</td></tr>`).join('')}
+      </table>
+    </div>`;
+  
+  // Add all other sections scrollable below
+  for (let i = 1; i < TABS.length; i++) {
+    const tab = TABS[i];
+    html += tab[2].map(key => renderSection(key)).join('');
   }
-  panel.scrollTop = 0;
+  
+  panel.innerHTML = html;
+  
+  // Scroll to the clicked section if not overview
+  if (id !== 'ov') {
+    setTimeout(() => {
+      const rows = panel.querySelectorAll('tr.go');
+      rows.forEach(row => {
+        if (row.dataset.t === id) {
+          row.closest('.sec')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    }, 100);
+  } else {
+    panel.scrollTop = 0;
+  }
   
   // Update top menu active state
   const topMenuItems = document.querySelectorAll('#top-menu .menu-item');
   topMenuItems.forEach(item => item.classList.toggle('on', item.dataset.tab === id));
   
   // Set up room preview after innerHTML update
-  if (id === 'ov') {
-    setTimeout(initRoomPreview, 50);
-    setTimeout(setupRoomExpandBtn, 50);
-  }
+  setTimeout(initRoomPreview, 50);
+  setTimeout(setupRoomExpandBtn, 50);
 }
 
 if (panel) {
@@ -327,14 +342,12 @@ if (panel) {
 /* ==========================================================================
    3. View Switcher Mode Handler
    ========================================================================== */
-let mode = '3d';
+let mode = 'grid'; // Start in grid/classic view by default
 
 function setMode(newMode) {
   mode = newMode;
   $('#v3d').classList.toggle('on', mode === '3d');
   $('#vgrid').classList.toggle('on', mode === 'grid');
-  $('#b3').classList.toggle('on', mode === '3d');
-  $('#bg').classList.toggle('on', mode === 'grid');
   setMenuOpen(false);
 }
 
@@ -370,18 +383,20 @@ function renderRoomPreview() {
 }
 
 // Set up room expand button
+let roomExpandBtnSetup = false;
 function setupRoomExpandBtn() {
+  if (roomExpandBtnSetup) return;
   const expandBtn = $('#room-expand');
   if (expandBtn) {
     expandBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       setMode('3d');
     });
+    roomExpandBtnSetup = true;
   }
 }
 
-$('#b3').onclick = () => setMode('3d');
-$('#bg').onclick = () => setMode('grid');
+// Allow opening the interactive view by clicking room preview
 $('#menu-toggle').onclick = () => setMenuOpen(!$('header').classList.contains('menu-open'));
 
 // Set up top menu navigation
@@ -398,6 +413,8 @@ topMenuItems.forEach(item => {
 
 /* ==========================================================================
    4. Three.js 3D Scene Architecture & Helper Functions
+   ========================================================================== */
+const stage = $('#stage');
 const W = () => stage.clientWidth;
 const H = () => stage.clientHeight;
 
@@ -4165,7 +4182,6 @@ function renderLoop() {
   // Render room preview when in grid mode
   if (mode === 'grid') {
     renderRoomPreview();
-    setupRoomExpandBtn();
     return;
   }
   
