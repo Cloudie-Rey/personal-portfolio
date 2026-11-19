@@ -1045,7 +1045,6 @@ tr.go:hover td {
 
 /* Footer Styles */
 .site-footer {
-  margin-top: auto;
   border-top: 1px solid var(--ln);
   background: #080b14;
   padding: 12px 18px;
@@ -1053,6 +1052,25 @@ tr.go:hover td {
   font-size: 12px;
   color: var(--mut);
   line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.site-footer.interactive-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  margin-top: 0;
+  width: 100%;
+}
+
+#vgrid .site-footer.interactive-footer {
+  display: none;
+}
+
+#v3d .site-footer.interactive-footer {
+  display: block;
 }
 
 .footer-content {
@@ -1085,10 +1103,10 @@ tr.go:hover td {
 /* Floating 3D Room Preview */
 .floating-room-preview {
   position: relative;
-  float: right;
+  float: left;
   width: 180px;
   height: 180px;
-  margin: 0 0 20px 20px;
+  margin: 0 20px 20px 0;
   border: 1px solid var(--ln);
   border-radius: 8px;
   background: rgba(0, 0, 0, 0.3);

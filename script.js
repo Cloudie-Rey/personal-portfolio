@@ -306,6 +306,14 @@ function switchTab(id) {
     html += tab[2].map(key => renderSection(key)).join('');
   }
   
+  // Add footer at the end of scrollable content
+  html += `
+    <footer class="site-footer classic-footer">
+      <div class="footer-content">
+        <p>Built and designed by <span class="highlight">Reyaa Divakar</span>. All rights reserved. <span class="copyright-symbol">©</span></p>
+      </div>
+    </footer>`;
+  
   panel.innerHTML = html;
   
   // Scroll to the clicked section if not overview
