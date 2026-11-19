@@ -6,9 +6,6 @@ const isLocalDevelopment = location.hostname === 'localhost'
   || location.hostname === '127.0.0.1'
   || location.hostname.endsWith('.app.github.dev');
 
-const responsiveRowLabel = (full, short) =>
-  `<span class="full-row-label">${full}</span><span class="short-row-label">${short}</span>`;
-
 const D = {
  resume: {
     title: 'Resume & Education',
@@ -58,7 +55,7 @@ const D = {
     cards: [
       ['Internal Reflection', 'Two-player cooperative puzzle game focusing on communication mechanics.', 'UNITY · TSA 2025', '', 'https://play.unity.com/en/games/13111446-5ec6-4932-8b29-29df2e3f5448/internal-reflection'],
       ['The Spellbound Assassins', 'Scratch game created, inspired by my TSA team of friends, for a class project.', 'SCRATCH', '', 'https://scratch.mit.edu/projects/1216822994'],
-      ["Alvin's Endless Adventure", 'A playable endless adventure built in Flowlab.', 'FLOWLAB', '', 'https://flowlab.io/game/play/2232462']
+      ["Alvin's Endless Adventure", 'A playable endless adventure built in Flowlab.', 'FLOWLAB', './public/game1.png', 'https://flowlab.io/game/play/2232462']
     ]
   },
   youtube: {
@@ -66,13 +63,9 @@ const D = {
     code: 'CREATIVE.MOV',
     intro: 'Content creation, video editing, and digital media production across multiple channels.',
     cards: [
-      ['Creative Cloudz', 'Main content channel covering humor, creative digital media, art, and tech.', 'MAIN CHANNEL'],
-      ['Creative Cloudz Tamil', 'Tamil content channel for creative digital media and storytelling.', 'TAMIL CHANNEL'],
+      ['Creative Cloudz', 'Main content channel covering humor, creative digital media, art, and tech.', 'MAIN CHANNEL', '', 'https://www.youtube.com/@CreativeCloudz1k'],
+      ['Creative Cloudz Tamil', 'Tamil content channel for creative digital media and storytelling.', 'TAMIL CHANNEL', '', 'https://www.youtube.com/@CreativeCloudzTamil1B'],
       ['TSA Digital Video', '1st Place District Conference award for Digital Video Production.', 'AWARDS']
-    ],
-    rows: [
-      ['Primary Channel', `<a href="https://www.youtube.com/@CreativeCloudz1k" target="_blank" rel="noopener">${responsiveRowLabel('youtube.com/@CreativeCloudz1k', '@CreativeCloudz1k')}</a>`, 'watch'],
-      ['Tamil Channel', `<a href="https://www.youtube.com/@CreativeCloudzTamil1B" target="_blank" rel="noopener">${responsiveRowLabel('youtube.com/@CreativeCloudzTamil1B', '@CreativeCloudzTamil1B')}</a>`, 'watch']
     ],
     link: ['Visit My Main Channel', 'https://www.youtube.com/@CreativeCloudz1k']
   },
