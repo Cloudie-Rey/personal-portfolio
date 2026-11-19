@@ -380,7 +380,7 @@ function renderPortfolio() {
       </div>
       <button id="room-expand" class="floating-room-preview" type="button">
         <canvas id="room-preview-canvas" aria-hidden="true"></canvas>
-        <span class="room-expand-label">{ click to view workspace }</span>
+        <span class="room-expand-label">click to view workspace</span>
       </button>
       <div class="traits" aria-label="Personal strengths">
         <span>Creative</span>
@@ -442,9 +442,21 @@ if (panel) {
    3. View Switcher Mode Handler
    ========================================================================== */
 let mode = 'grid'; // Start in grid/classic view by default
+const phoneLayout = window.matchMedia('(max-width: 700px)');
+
+function positionSpotifyToggle() {
+  const target = phoneLayout.matches && mode === 'grid'
+    ? panel.querySelector('.portfolio-content')
+    : $('main');
+  if (spotifyToggle.parentElement !== target) target.prepend(spotifyToggle);
+}
+
+positionSpotifyToggle();
+phoneLayout.addEventListener('change', positionSpotifyToggle);
 
 function setMode(newMode) {
   mode = newMode;
+  positionSpotifyToggle();
   $('#v3d').classList.toggle('on', mode === '3d');
   $('#vgrid').classList.toggle('on', mode === 'grid');
   $('#return-classic').hidden = mode !== '3d';
@@ -482,7 +494,7 @@ function initRoomPreview() {
     roomPreviewCamera = new T.PerspectiveCamera(43.5, 1, 0.1, 200);
   } catch (e) {
     console.warn('Could not create room preview renderer:', e);
-    $('.room-expand-label').textContent = '{ preview unavailable — click to view workspace }';
+    $('.room-expand-label').textContent = 'preview unavailable — click to view workspace';
   }
 }
 
