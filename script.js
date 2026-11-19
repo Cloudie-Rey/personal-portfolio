@@ -406,7 +406,7 @@ function renderPortfolio() {
           <ul class="about-skills">
             ${['Python', 'CAD', 'Hardware'].map(skill => `<li><strong>${skill}</strong></li>`).join('')}
           </ul>
-          <p>In my free time, I'm a super athletic nerd. Because I genuinely love building things, most days it honestly feels like me and my 3D printer against the world (alongside my VS Code). When I step away from my desk, I love working out, jumping into sports, creating art, listening to music, playing video games with friends, and livestreaming or editing content.</p>
+          <p>In my free time, I'm a super athletic nerd. Most days it honestly feels like me and my 3D printer against the world (and VS Code). When I step away building, I love all things fitness, creating art, listening to music, playing video games. Oh I make create content too.</p>
         </div>
       </div>
     </section>`;
