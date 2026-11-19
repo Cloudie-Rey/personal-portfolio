@@ -261,53 +261,150 @@ spotifyToggle.onclick = () => {
    2. Grid View Navigation Logic
    ========================================================================== */
 const TABS = [
-  ['ov', 'Overview'],
+  ['ov', 'About Me'],
   ['res', 'Resume', ['resume']],
-  ['biz', 'Experience', ['business']],
   ['eng', 'Technical Projects', ['github']],
-  ['med', 'Creative Projects', ['games', 'youtube', 'music']],
-  ['con', 'Contact', ['contact']],
-  ['fun', 'Other Fun Facts', ['funfacts']]
+  ['biz', 'Experience', ['business']],
+  ['med', 'Creative Projects', ['games', 'youtube']],
+  ['tun', 'Tunes', ['music']],
+  ['fun', 'Other Fun Facts', ['funfacts']],
+  ['con', 'Contact', ['contact']]
 ];
 
-const side = $('#side');
 const panel = $('#panel');
 
-function switchTab(id) {
-  if (!panel) return;
-  
-  // Always show overview with all content scrollable below
+const ABOUT_ASCII_ART = await fetch('about-ascii.txt').then(response => {
+  if (!response.ok) throw new Error(`Failed to load About ASCII art: ${response.status}`);
+  return response.text();
+}).then(art => art.replace(/\r?\n$/, ''));
+
+function renderAsciiArt(element, art) {
+  const rows = art.split('\n');
+  const names = rows.flatMap((row, rowIndex) =>
+    Array.from(row.matchAll(/R+E+Y+A{2,}/g), match => ({
+      row: rowIndex,
+      start: match.index,
+      end: match.index + match[0].length - 1,
+      text: match[0]
+    }))
+  );
+  element.textContent = art;
+  const text = element.firstChild;
+  const range = document.createRange();
+  range.setStart(text, 0);
+  range.setEnd(text, rows[0].length);
+  let lastCell = '';
+  let lastSparkle = 0;
+  let activeName = null;
+  let activeNameSparkle = null;
+
+  const sparkleAtPointer = event => {
+    if (event.pointerType === 'touch') return;
+    const bounds = element.getBoundingClientRect();
+    const characterWidth = range.getBoundingClientRect().width / rows[0].length;
+    const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
+    if (!characterWidth || !lineHeight) return;
+    const column = Math.floor((event.clientX - bounds.left) / characterWidth);
+    const row = Math.floor((event.clientY - bounds.top) / lineHeight);
+    if (!rows[row]?.[column] || rows[row][column] === ' ') return;
+    const cell = `${row}:${column}`;
+    if (cell === lastCell || event.timeStamp - lastSparkle < 50) return;
+    lastCell = cell;
+    lastSparkle = event.timeStamp;
+
+    let targetRow = row;
+    let targetColumn = column;
+    let nearestDistance = 14;
+    let nearestName = null;
+    for (const name of names) {
+      const nearestColumn = Math.max(name.start, Math.min(column, name.end));
+      const distance = Math.hypot(
+        (nearestColumn - column) * characterWidth,
+        (name.row - row) * lineHeight
+      );
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        targetRow = name.row;
+        targetColumn = nearestColumn;
+        nearestName = name;
+      }
+    }
+    if (nearestName && nearestName === activeName) return;
+
+    const sparkle = document.createElement('span');
+    sparkle.className = nearestName ? 'ascii-sparkle ascii-sparkle-name' : 'ascii-sparkle';
+    if (!nearestName) sparkle.textContent = rows[targetRow][targetColumn];
+    sparkle.style.left = `${(targetColumn + 0.5) * characterWidth}px`;
+    sparkle.style.top = `${(targetRow + 0.5) * lineHeight}px`;
+    sparkle.style.color = ['#ffd86b', '#ff8bc7', '#9fffe0', '#9cb8ff', '#ffaf6b'][(targetRow + targetColumn) % 5];
+    if (nearestName) {
+      activeNameSparkle?.remove();
+      activeName = nearestName;
+      activeNameSparkle = sparkle;
+      const cloud = document.createElement('span');
+      cloud.className = 'ascii-name-cloud';
+      cloud.textContent = nearestName.text;
+      sparkle.append(cloud);
+    }
+    element.append(sparkle);
+    window.setTimeout(() => {
+      sparkle.remove();
+      if (activeNameSparkle === sparkle) {
+        activeName = null;
+        activeNameSparkle = null;
+      }
+    }, nearestName ? 2200 : 700);
+  };
+  element.addEventListener('pointerenter', sparkleAtPointer);
+  element.addEventListener('pointermove', sparkleAtPointer);
+  element.addEventListener('pointerleave', () => { lastCell = ''; });
+}
+
+function renderPortfolio() {
   let html = `
-    <!-- Floating 3D Room Preview -->
-    <div class="floating-room-preview">
-      <canvas id="room-preview-canvas"></canvas>
-      <button id="room-expand" class="room-expand-btn" title="Click to explore in 3D">↗</button>
+    <div class="portfolio-content">
+    <div class="overview-intro">
+      <div class="sec hero">
+        <div class="code">// MYSPACE.PY</div>
+        <h1><span class="typed-name"><span class="typed-name-text"><span>R</span><span>e</span><span>y</span><span>a</span><span>a</span> <span>D</span><span>i</span><span>v</span><span>a</span><span>k</span><span>a</span><span>r</span></span></span><br>Robotics & Mechanical Engineer.</h1>
+        <p>Hi! Welcome to my humble abode! I'm learning and creating all the time! Take a look at my work by clicking where ever your cursiosity takes you!</p>
+      </div>
+      <button id="room-expand" class="floating-room-preview" type="button">
+        <canvas id="room-preview-canvas" aria-hidden="true"></canvas>
+        <span class="room-expand-label">{ click to view workspace }</span>
+      </button>
+      <div class="traits" aria-label="Personal strengths">
+        <span>Creative</span>
+        <span>Collaborative</span>
+        <span>Problem Solver</span>
+        <span>Flexible</span>
+      </div>
     </div>
-    <div class="sec hero">
-      <div class="code">// MYSPACE.PY</div>
-      <h1>Reyaa Divakar<br>Robotics & Mechanical Engineering.</h1>
-      <p>Hi! Welcome to my humble abode! I'm learning and creating all the time! Take a look at my work by clicking where ever your cursiosity takes you!</p>
-    </div>
-    <div class="traits" aria-label="Personal strengths">
-      <span>Creative</span>
-      <span>Collaborative</span>
-      <span>Problem Solver</span>
-      <span>Flexible</span>
-    </div>
-    <div class="sec">
-      <table>
-        ${TABS.slice(1).map(x => `<tr class="go" data-t="${x[0]}"><td class="k">${x[1]}</td><td>${D[x[2][0]].intro}</td></tr>`).join('')}
-      </table>
-    </div>`;
+    <section class="sec about-me" id="section-ov">
+      <div class="about-heading">
+        <div class="code">// ABOUT.ME</div>
+        <h2>About Me</h2>
+      </div>
+      <div class="about-body">
+        <pre class="about-ascii" aria-hidden="true"></pre>
+        <div class="about-copy">
+          <p>I am currently a Mechanical Engineering student at <strong>Colorado School of Mines</strong>, where I work on robotics projects and research. Previously, I spent a lot of time doing creative work, and anything innovative still gets me excited.</p>
+          <p>Here are some things I have been working with:</p>
+          <ul class="about-skills">
+            ${['Python', 'CAD', 'Hardware'].map(skill => `<li><strong>${skill}</strong></li>`).join('')}
+          </ul>
+          <p>In my free time, I'm a super athletic nerd. Because I genuinely love building things, most days it honestly feels like me and my 3D printer against the world (alongside my VS Code). When I step away from my desk, I love working out, jumping into sports, creating art, listening to music, playing video games with friends, and livestreaming or editing content.</p>
+        </div>
+      </div>
+    </section>`;
   
-  // Add all other sections scrollable below
   for (let i = 1; i < TABS.length; i++) {
     const tab = TABS[i];
-    html += tab[2].map(key => renderSection(key)).join('');
+    html += `<section id="section-${tab[0]}">${tab[2].map(key => renderSection(key)).join('')}</section>`;
   }
-  
-  // Add footer at the end of scrollable content
+
   html += `
+    </div>
     <footer class="site-footer classic-footer">
       <div class="footer-content">
         <p>Built and designed by <span class="highlight">Reyaa Divakar</span>. All rights reserved. <span class="copyright-symbol">©</span></p>
@@ -315,36 +412,21 @@ function switchTab(id) {
     </footer>`;
   
   panel.innerHTML = html;
-  
-  // Scroll to the clicked section if not overview
-  if (id !== 'ov') {
-    setTimeout(() => {
-      const rows = panel.querySelectorAll('tr.go');
-      rows.forEach(row => {
-        if (row.dataset.t === id) {
-          row.closest('.sec')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      });
-    }, 100);
-  } else {
-    panel.scrollTop = 0;
-  }
-  
-  // Update top menu active state
-  const topMenuItems = document.querySelectorAll('#top-menu .menu-item');
-  topMenuItems.forEach(item => item.classList.toggle('on', item.dataset.tab === id));
-  
-  // Set up room preview after innerHTML update
-  setTimeout(initRoomPreview, 50);
-  setTimeout(setupRoomExpandBtn, 50);
+  renderAsciiArt(panel.querySelector('.about-ascii'), ABOUT_ASCII_ART);
+}
+
+function switchTab(id) {
+  const section = document.getElementById(`section-${id}`);
+  if (!section) return;
+  if (mode === '3d') setMode('grid');
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.querySelectorAll('#top-menu .menu-item').forEach(item => {
+    item.classList.toggle('on', item.dataset.tab === id);
+  });
 }
 
 if (panel) {
-  panel.onclick = e => {
-    const row = e.target.closest('tr.go');
-    if (row) switchTab(row.dataset.t);
-  };
-  switchTab('ov');
+  renderPortfolio();
 }
 
 /* ==========================================================================
@@ -356,7 +438,10 @@ function setMode(newMode) {
   mode = newMode;
   $('#v3d').classList.toggle('on', mode === '3d');
   $('#vgrid').classList.toggle('on', mode === 'grid');
+  $('#return-classic').hidden = mode !== '3d';
+  $('.interactive-footer').hidden = mode !== '3d';
   setMenuOpen(false);
+  handleResize();
 }
 
 function setMenuOpen(open) {
@@ -365,52 +450,61 @@ function setMenuOpen(open) {
 }
 
 // Floating room preview renderer
-let roomPreviewRenderer, roomPreviewCanvas;
+let roomPreviewRenderer;
+let roomPreviewCamera;
+let roomPreviewWidth = 0;
+let roomPreviewHeight = 0;
+const previewOrbitAxis = new T.Vector3(0, 1, 0);
+const previewReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 function initRoomPreview() {
-  roomPreviewCanvas = $('#room-preview-canvas');
-  if (!roomPreviewCanvas || roomPreviewRenderer) return; // Already initialized or canvas not found
-  
+  const canvas = $('#room-preview-canvas');
+  if (!canvas || roomPreviewRenderer) return;
+
   try {
     roomPreviewRenderer = new T.WebGLRenderer({ 
-      canvas: roomPreviewCanvas, 
+      canvas,
       antialias: true, 
       alpha: true 
     });
     roomPreviewRenderer.setClearColor(0x000000, 0);
     roomPreviewRenderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
-    roomPreviewRenderer.setSize(180, 180);
+    roomPreviewRenderer.localClippingEnabled = true;
+    roomPreviewCamera = new T.PerspectiveCamera(43.5, 1, 0.1, 200);
   } catch (e) {
     console.warn('Could not create room preview renderer:', e);
+    $('.room-expand-label').textContent = '{ preview unavailable — click to view workspace }';
   }
 }
 
 function renderRoomPreview() {
-  if (!roomPreviewRenderer || !scene || !cam) return;
-  roomPreviewRenderer.render(scene, cam);
-}
-
-// Set up room expand button
-let roomExpandBtnSetup = false;
-function setupRoomExpandBtn() {
-  if (roomExpandBtnSetup) return;
-  const expandBtn = $('#room-expand');
-  if (expandBtn) {
-    expandBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      setMode('3d');
-    });
-    roomExpandBtnSetup = true;
+  if (!roomPreviewRenderer || !roomPreviewCamera) return;
+  const width = roomPreviewRenderer.domElement.clientWidth;
+  const height = roomPreviewRenderer.domElement.clientHeight;
+  if (width && height && (width !== roomPreviewWidth || height !== roomPreviewHeight)) {
+    roomPreviewRenderer.setSize(width, height, false);
+    roomPreviewWidth = width;
+    roomPreviewHeight = height;
+    roomPreviewCamera.aspect = width / height;
+    roomPreviewCamera.fov = T.MathUtils.radToDeg(2 * Math.atan(
+      Math.tan(T.MathUtils.degToRad(43.5 / 2)) / roomPreviewCamera.aspect
+    ));
+    roomPreviewCamera.updateProjectionMatrix();
   }
+  const angle = previewReducedMotion.matches ? 0 : Math.sin(performance.now() / 3500) * 0.42;
+  roomPreviewCamera.position.copy(HB).multiplyScalar(1.5).applyAxisAngle(previewOrbitAxis, angle);
+  roomPreviewCamera.lookAt(HT);
+  roomPreviewRenderer.render(scene, roomPreviewCamera);
 }
 
-// Allow opening the interactive view by clicking room preview
+$('#room-expand').onclick = () => setMode('3d');
+$('#return-classic').onclick = () => setMode('grid');
 $('#menu-toggle').onclick = () => setMenuOpen(!$('header').classList.contains('menu-open'));
 
 // Set up top menu navigation
 const topMenuItems = document.querySelectorAll('#top-menu .menu-item');
 topMenuItems.forEach(item => {
-  item.addEventListener('click', (e) => {
+  item.addEventListener('click', () => {
     const tab = item.dataset.tab;
     if (tab) {
       switchTab(tab);
@@ -4006,7 +4100,6 @@ function openModal(key) {
 
   $('#v3d').classList.toggle('has-spotify-player', showSpotifyPlayer);
   spotifyPlayer.classList.toggle('spotify-player-offscreen', !showSpotifyPlayer);
-  spotifyToggle.classList.toggle('spotify-toggle-near-player', showSpotifyPlayer);
   spotifyPlayer.setAttribute('aria-hidden', String(!showSpotifyPlayer));
   $('#modal').classList.toggle('has-spotify-player', showSpotifyPlayer);
   $('#modal').classList.add('on');
@@ -4017,7 +4110,6 @@ function closeModal() {
   $('#modal').classList.remove('has-spotify-player');
   $('#v3d').classList.remove('has-spotify-player');
   spotifyPlayer.classList.add('spotify-player-offscreen');
-  spotifyToggle.classList.remove('spotify-toggle-near-player');
   spotifyPlayer.setAttribute('aria-hidden', 'true');
 }
 
@@ -4180,6 +4272,7 @@ function handleResize() {
 }
 addEventListener('resize', handleResize);
 handleResize();
+initRoomPreview();
 
 const tempProjVec = new T.Vector3();
 let lastHolidayAnimationTime = 0;
@@ -4189,6 +4282,7 @@ function renderLoop() {
   
   // Render room preview when in grid mode
   if (mode === 'grid') {
+    updateWindowScenery();
     renderRoomPreview();
     return;
   }
