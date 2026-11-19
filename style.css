@@ -960,3 +960,42 @@ tr.go:hover td {
     display: none;
   }
 }
+
+/* Footer Styles */
+.site-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--ln);
+  background: #080b14;
+  padding: 12px 18px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--mut);
+  line-height: 1.4;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+.site-footer .highlight {
+  color: var(--cy);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.site-footer .copyright-symbol {
+  margin-left: 2px;
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .site-footer {
+    padding: 18px 12px;
+    font-size: 12px;
+  }
+}
