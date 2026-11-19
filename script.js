@@ -36,7 +36,7 @@ const D = {
     cards: [
       ['The Kraken Sound Sensor', 'Acoustic search-and-rescue sensing platform to detect human voice frequencies under rubble.', 'ROBOTICS · MINES'],
       ['Lucky Charm AI Vision', 'Python & OpenCV computer vision assistant running on a Raspberry Pi hardware stack.', 'PYTHON · OPENCV'],
-      ['TSA UAV Drone', 'Custom drone with mechanical claw payload (3rd Place Districts Bronze).', 'DRONE DESIGN', '/drone.png'],
+      ['TSA UAV Drone', 'Custom drone with mechanical claw payload (3rd Place Districts Bronze).', 'DRONE DESIGN', './public/drone.png'],
       ['Code Connect Platform', 'Official web platform deployed via Vercel with GitHub version control.', 'WEBGL/JS']
     ],
     link: ['GitHub Profile', 'https://github.com/Cloudie-Rey']
