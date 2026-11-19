@@ -308,7 +308,6 @@ function renderAsciiArt(element, art) {
   let activeNameSparkle = null;
 
   const sparkleAtPointer = event => {
-    if (event.pointerType === 'touch') return;
     const bounds = element.getBoundingClientRect();
     const characterWidth = range.getBoundingClientRect().width / rows[0].length;
     const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
@@ -365,8 +364,11 @@ function renderAsciiArt(element, art) {
     }, nearestName ? 2200 : 700);
   };
   element.addEventListener('pointerenter', sparkleAtPointer);
+  element.addEventListener('pointerdown', sparkleAtPointer);
   element.addEventListener('pointermove', sparkleAtPointer);
   element.addEventListener('pointerleave', () => { lastCell = ''; });
+  element.addEventListener('pointerup', () => { lastCell = ''; });
+  element.addEventListener('pointercancel', () => { lastCell = ''; });
 }
 
 function renderPortfolio() {
@@ -4384,3 +4386,19 @@ function renderLoop() {
 }
 
 renderLoop();
+
+const typedName = $('.typed-name');
+if (typedName) {
+  const startTyping = () => typedName.classList.add('is-typing');
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) {
+        startTyping();
+        observer.disconnect();
+      }
+    }, { root: panel, threshold: 0.1 });
+    observer.observe(typedName);
+  } else {
+    requestAnimationFrame(startTyping);
+  }
+}

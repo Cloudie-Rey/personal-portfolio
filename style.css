@@ -736,16 +736,19 @@ td.k {
 
 .typed-name-text {
   display: inline-block;
+}
+
+.typed-name.is-typing .typed-name-text {
   animation: type-name 1.8s steps(13, end) both;
 }
 
-.typed-name-text span:nth-child(5n + 1) { color: #ff7272; }
-.typed-name-text span:nth-child(5n + 2) { color: #ffad5c; }
-.typed-name-text span:nth-child(5n + 3) { color: #ffe66d; }
-.typed-name-text span:nth-child(5n + 4) { color: #83efa1; }
-.typed-name-text span:nth-child(5n) { color: #72baff; }
+.typed-name.is-typing .typed-name-text span:nth-child(5n + 1) { color: #ff7272; }
+.typed-name.is-typing .typed-name-text span:nth-child(5n + 2) { color: #ffad5c; }
+.typed-name.is-typing .typed-name-text span:nth-child(5n + 3) { color: #ffe66d; }
+.typed-name.is-typing .typed-name-text span:nth-child(5n + 4) { color: #83efa1; }
+.typed-name.is-typing .typed-name-text span:nth-child(5n) { color: #72baff; }
 
-.typed-name-text span {
+.typed-name.is-typing .typed-name-text span {
   animation: name-to-teal 0.4s ease 1.8s forwards;
 }
 
@@ -757,6 +760,9 @@ td.k {
   left: 100%;
   width: 2px;
   background: var(--cy);
+}
+
+.typed-name.is-typing::after {
   animation: type-caret-move 1.8s steps(13, end) both, type-caret-blink 0.8s step-end infinite;
 }
 
@@ -779,8 +785,8 @@ td.k {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .typed-name-text, .typed-name::after { animation: none; }
-  .typed-name-text span:nth-child(n) { animation: none; color: var(--cy); }
+  .typed-name.is-typing .typed-name-text, .typed-name.is-typing::after { animation: none; }
+  .typed-name.is-typing .typed-name-text span:nth-child(n) { animation: none; color: var(--cy); }
 }
 
 .hero p {
@@ -837,6 +843,7 @@ td.k {
   white-space: pre;
   cursor: default;
   user-select: none;
+  touch-action: pan-y;
 }
 
 .about-ascii-unavailable {
