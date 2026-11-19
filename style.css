@@ -611,7 +611,7 @@ main {
   align-items: center;
   justify-content: center;
   height: 150px;
-  margin: -4px -4px 12px;
+  margin: -4px -4px 0;
   overflow: hidden;
   border: 0;
   background: transparent;
