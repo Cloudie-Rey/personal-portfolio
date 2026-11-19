@@ -624,6 +624,10 @@ td.k {
   white-space: nowrap;
 }
 
+.short-row-label {
+  display: none;
+}
+
 .spotify-embed {
   width: min(calc(100% - 40px), 520px);
   flex: 0 0 auto;
@@ -1382,8 +1386,23 @@ td.k {
     overflow-wrap: anywhere;
   }
 
-  .portfolio-content td.k {
+  .portfolio-content tr:not(:has(a)) td.k {
     white-space: normal;
+  }
+
+  .portfolio-content tr:has(a) td {
+    padding: 7px 4px;
+    font-size: clamp(12px, 3.5vw, 17px);
+    overflow-wrap: normal;
+    white-space: nowrap;
+  }
+
+  .full-row-label {
+    display: none;
+  }
+
+  .short-row-label {
+    display: inline;
   }
 }
 
@@ -1444,14 +1463,29 @@ header {
   font-size: 19px;
 }
 
+@media (min-width: 701px) {
+  body.classic-mode header {
+    margin-right: var(--classic-scrollbar-width, 0px);
+  }
+
+  #vgrid.on #panel {
+    position: fixed;
+    inset: 0;
+    height: 100vh;
+    padding-top: var(--classic-header-height, 0px);
+    scroll-padding-top: var(--classic-header-height, 0px);
+  }
+}
+
 .portfolio-content {
   width: min(1000px, calc(100% - 40px));
   margin: 0 auto;
   padding: 68px 0 32px;
 }
 
-#panel .portfolio-content > section + section {
-  padding-top: 16px;
+#panel .portfolio-content > section + section,
+#panel .portfolio-content > section > .sec + .sec {
+  padding-top: clamp(40px, 6vw, 80px);
 }
 
 .classic-footer {

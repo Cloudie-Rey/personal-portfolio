@@ -6,6 +6,8 @@ const isLocalDevelopment = location.hostname === 'localhost'
   || location.hostname === '127.0.0.1'
   || location.hostname.endsWith('.app.github.dev');
 
+const responsiveRowLabel = (full, short) =>
+  `<span class="full-row-label">${full}</span><span class="short-row-label">${short}</span>`;
 
 const D = {
  resume: {
@@ -59,8 +61,8 @@ const D = {
       ['National 3rd Place', 'Awarded 3rd Place at the TSA National Conference for Video Game Design.', 'NATIONAL']
     ],
     rows: [
-      ['The Spellbound Assassins (TSA)', '<a href="https://scratch.mit.edu/projects/1216822994" target="_blank" rel="noopener">Play on Scratch</a>', 'SCRATCH'],
-      ["Alvin's Endless Adventure", '<a href="https://flowlab.io/game/play/2232462" target="_blank" rel="noopener">Play on Flowlab</a>', 'FLOWLAB'],
+      [responsiveRowLabel('The Spellbound Assassins (TSA)', 'Spellbound Assassins'), '<a href="https://scratch.mit.edu/projects/1216822994" target="_blank" rel="noopener">Play on Scratch</a>', 'SCRATCH'],
+      [responsiveRowLabel("Alvin's Endless Adventure", "Alvin's Adventure"), '<a href="https://flowlab.io/game/play/2232462" target="_blank" rel="noopener">Play on Flowlab</a>', 'FLOWLAB'],
       ['Internal Reflection', '<a href="https://play.unity.com/en/games/13111446-5ec6-4932-8b29-29df2e3f5448/internal-reflection" target="_blank" rel="noopener">Play on Unity</a>', 'UNITY']
     ]
   },
@@ -74,8 +76,8 @@ const D = {
       ['TSA Digital Video', '1st Place District Conference award for Digital Video Production.', 'AWARDS']
     ],
     rows: [
-      ['Primary Channel', '<a href="https://www.youtube.com/@CreativeCloudz1k" target="_blank" rel="noopener">youtube.com/@CreativeCloudz1k</a>', 'watch'],
-      ['Tamil Channel', '<a href="https://www.youtube.com/@CreativeCloudzTamil1B" target="_blank" rel="noopener">youtube.com/@CreativeCloudzTamil1B</a>', 'watch']
+      ['Primary Channel', `<a href="https://www.youtube.com/@CreativeCloudz1k" target="_blank" rel="noopener">${responsiveRowLabel('youtube.com/@CreativeCloudz1k', '@CreativeCloudz1k')}</a>`, 'watch'],
+      ['Tamil Channel', `<a href="https://www.youtube.com/@CreativeCloudzTamil1B" target="_blank" rel="noopener">${responsiveRowLabel('youtube.com/@CreativeCloudzTamil1B', '@CreativeCloudzTamil1B')}</a>`, 'watch']
     ],
     link: ['Visit My Main Channel', 'https://www.youtube.com/@CreativeCloudz1k']
   },
@@ -446,6 +448,20 @@ if (panel) {
 let mode = 'grid'; // Start in grid/classic view by default
 const phoneLayout = window.matchMedia('(max-width: 700px)');
 
+function updateClassicHeaderMetrics() {
+  document.documentElement.style.setProperty('--classic-header-height', `${$('header').offsetHeight}px`);
+  document.documentElement.style.setProperty('--classic-scrollbar-width', `${panel.offsetWidth - panel.clientWidth}px`);
+}
+
+document.body.classList.add('classic-mode');
+updateClassicHeaderMetrics();
+window.addEventListener('resize', updateClassicHeaderMetrics);
+if ('ResizeObserver' in window) {
+  const layoutObserver = new ResizeObserver(updateClassicHeaderMetrics);
+  layoutObserver.observe($('header'));
+  layoutObserver.observe(panel);
+}
+
 function positionSpotifyToggle() {
   const target = phoneLayout.matches && mode === 'grid'
     ? panel.querySelector('.portfolio-content')
@@ -458,11 +474,13 @@ phoneLayout.addEventListener('change', positionSpotifyToggle);
 
 function setMode(newMode) {
   mode = newMode;
+  document.body.classList.toggle('classic-mode', mode === 'grid');
   positionSpotifyToggle();
   $('#v3d').classList.toggle('on', mode === '3d');
   $('#vgrid').classList.toggle('on', mode === 'grid');
   $('#return-classic').hidden = mode !== '3d';
   $('.interactive-footer').hidden = mode !== '3d';
+  updateClassicHeaderMetrics();
   setMenuOpen(false);
   handleResize();
 }
