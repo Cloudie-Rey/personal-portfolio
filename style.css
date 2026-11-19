@@ -589,16 +589,21 @@ main {
 .card-link {
   display: block;
   color: inherit;
+  text-decoration: none !important;
+}
+
+.card-link h3,
+.card-link p,
+.card-link i {
   text-decoration: none;
 }
 
-.card-url {
+.card-arrow {
   display: block;
-  margin-top: 12px;
+  margin-top: 10px;
   color: var(--cy);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  overflow-wrap: anywhere;
+  font-size: 18px;
+  line-height: 1;
 }
 
 .card-image {

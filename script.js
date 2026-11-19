@@ -56,9 +56,9 @@ const D = {
     code: 'ARCADE.BIN',
     intro: "Games I've contributed to or developed.",
     cards: [
-      ['Internal Reflection', 'Two-player cooperative puzzle game focusing on communication mechanics.', 'UNITY · TSA 2025', '', 'https://play.unity.com/en/games/13111446-5ec6-4932-8b29-29df2e3f5448/internal-reflection', 'play.unity.com/.../internal-reflection'],
-      ['The Spellbound Assassins', 'A fantasy adventure created for TSA.', 'SCRATCH · TSA', '', 'https://scratch.mit.edu/projects/1216822994', 'scratch.mit.edu/projects/1216822994'],
-      ["Alvin's Endless Adventure", 'A playable endless adventure built in Flowlab.', 'FLOWLAB', '', 'https://flowlab.io/game/play/2232462', 'flowlab.io/game/play/2232462']
+      ['Internal Reflection', 'Two-player cooperative puzzle game focusing on communication mechanics.', 'UNITY · TSA 2025', '', 'https://play.unity.com/en/games/13111446-5ec6-4932-8b29-29df2e3f5448/internal-reflection'],
+      ['The Spellbound Assassins', 'A fantasy adventure created for TSA.', 'SCRATCH · TSA', '', 'https://scratch.mit.edu/projects/1216822994'],
+      ["Alvin's Endless Adventure", 'A playable endless adventure built in Flowlab.', 'FLOWLAB', '', 'https://flowlab.io/game/play/2232462']
     ]
   },
   youtube: {
@@ -123,7 +123,7 @@ const renderSection = (key, includeSpotifyEmbed = true) => {
       <p>${s.intro}</p>
       ${musicCardAction}
       ${s.cards ? `<div class="cards">${s.cards.map(c => {
-        const content = `${c[3] ? `<div class="card-image"><img src="${c[3]}" alt="${c[0]}" loading="lazy"></div>` : ''}<i>${c[2]}</i><h3>${c[0]}</h3><p>${c[1]}</p>${c[5] ? `<span class="card-url">${c[5]} ↗</span>` : ''}`;
+        const content = `${c[3] ? `<div class="card-image"><img src="${c[3]}" alt="${c[0]}" loading="lazy"></div>` : ''}<i>${c[2]}</i><h3>${c[0]}</h3><p>${c[1]}</p>${c[4] ? '<span class="card-arrow" aria-hidden="true">↗</span>' : ''}`;
         return c[4]
           ? `<a class="card card-link" href="${c[4]}" target="_blank" rel="noopener">${content}</a>`
           : `<div class="card">${content}</div>`;
